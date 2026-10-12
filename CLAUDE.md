@@ -18,4 +18,5 @@ Tres archivos: `index.html` (DOM + canvas), `style.css`, `game.js` (toda la lóg
 - Flujo de pieza: `loop` (rAF, acumula `dropAccum` vs `dropInterval`) / `softDrop` / `hardDrop` → `lockPiece` → `merge` → `clearLines` → `spawn`. `spawn` llama `endGame()` si la pieza nueva colisiona.
 - Pausa y game over cancelan el rAF (`animId`); `togglePause` reanuda llamando `loop` directamente; `init()` (también el botón reiniciar) resetea todo el estado.
 - `updateHUD()` se llama explícitamente tras cambios de score/lines/level (incluido al final del handler `keydown`).
+- Tema claro/oscuro (oscuro por defecto): `THEMES` en `game.js` guarda paleta de piezas, rejilla, resaltado y alpha del ghost por tema; `COLORS` apunta a la paleta activa. `applyTheme` pone `data-theme` en `<html>` (las variables CSS en `style.css` hacen el resto) y redibuja. Atajo `T` y botón `#theme-toggle`. Colores de pieza nuevos deben añadirse en ambas paletas.
 - Dimensiones del canvas acopladas: `COLS×BLOCK` × `ROWS×BLOCK` deben coincidir con `width`/`height` de `<canvas id="board">` en `index.html` (hoy 300×600). El canvas `next-canvas` es 120×120 (4×4 bloques de 30).

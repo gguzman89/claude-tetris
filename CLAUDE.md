@@ -14,7 +14,7 @@ Tetris en JS vanilla + Canvas 2D. Sin `package.json`, build, linter ni tests. RE
 
 Tres archivos: `index.html` (DOM + canvas), `style.css`, `game.js` (toda la lógica, script único, `'use strict'`, estado en variables globales de módulo).
 
-- Tablero: matriz `ROWS×COLS` con `0` o índice 1–7. Ese índice sirve a la vez para `PIECES` y `COLORS` (índice 0 = `null`); piezas nuevas deben añadirse en ambos arrays y ajustar `randomPiece` (`* 7`).
+- Tablero: matriz `ROWS×COLS` con `0` o índice 1–8. Ese índice sirve a la vez para `PIECES` y `COLORS` (índice 0 = `null`); piezas nuevas deben añadirse en `PIECES` y en ambas paletas de `COLORS` (`randomPiece` usa `PIECES.length - 1`). El índice 8 es la tuerca (anillo 3×3 con hueco central, pieza challenge).
 - Flujo de pieza: `loop` (rAF, acumula `dropAccum` vs `dropInterval`) / `softDrop` / `hardDrop` → `lockPiece` → `merge` → `clearLines` → `spawn`. `spawn` llama `endGame()` si la pieza nueva colisiona.
 - Pausa y game over cancelan el rAF (`animId`); `togglePause` reanuda llamando `loop` directamente; `init()` (también el botón reiniciar) resetea todo el estado.
 - `updateHUD()` se llama explícitamente tras cambios de score/lines/level (incluido al final del handler `keydown`).

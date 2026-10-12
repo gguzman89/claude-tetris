@@ -4,16 +4,44 @@ const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
 
-const COLORS = [
-  null,
-  '#4dd0e1', // I - cyan
-  '#ffd54f', // O - yellow
-  '#ba68c8', // T - purple
-  '#81c784', // S - green
-  '#e57373', // Z - red
-  '#90caf9', // J - azul pálido
-  '#ffb74d', // L - orange
-];
+// Índice 1–7 = pieza; cada tema tiene su paleta para mantener el contraste con el fondo
+const THEMES = {
+  dark: {
+    label: '🌙 Oscuro',
+    grid: '#22222e',
+    highlight: 'rgba(255,255,255,0.12)',
+    ghostAlpha: 0.2,
+    colors: [
+      null,
+      '#4dd0e1', // I - cyan
+      '#ffd54f', // O - yellow
+      '#ba68c8', // T - purple
+      '#81c784', // S - green
+      '#e57373', // Z - red
+      '#90caf9', // J - azul pálido
+      '#ffb74d', // L - orange
+    ],
+  },
+  light: {
+    label: '☀️ Claro',
+    grid: '#d9dbe6',
+    highlight: 'rgba(255,255,255,0.35)',
+    ghostAlpha: 0.3,
+    colors: [
+      null,
+      '#00a5bd', // I - cyan
+      '#f2a900', // O - yellow
+      '#9c3fb5', // T - purple
+      '#3d9a45', // S - green
+      '#e0392f', // Z - red
+      '#2a78d6', // J - azul
+      '#ef7d00', // L - orange
+    ],
+  },
+};
+
+let theme = 'dark';
+let COLORS = THEMES[theme].colors;
 
 const PIECES = [
   null,
@@ -39,6 +67,7 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const themeBtn = document.getElementById('theme-toggle');
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
@@ -163,13 +192,13 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
   // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
+  context.fillStyle = THEMES[theme].highlight;
   context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
   context.globalAlpha = 1;
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = THEMES[theme].grid;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -199,7 +228,7 @@ function draw() {
   for (let r = 0; r < current.shape.length; r++)
     for (let c = 0; c < current.shape[r].length; c++)
       if (current.shape[r][c])
-        drawBlock(ctx, current.x + c, gy + r, current.shape[r][c], BLOCK, 0.2);
+        drawBlock(ctx, current.x + c, gy + r, current.shape[r][c], BLOCK, THEMES[theme].ghostAlpha);
 
   // current piece
   for (let r = 0; r < current.shape.length; r++)
@@ -256,6 +285,23 @@ function loop(ts) {
   animId = requestAnimationFrame(loop);
 }
 
+function applyTheme(name) {
+  theme = name;
+  COLORS = THEMES[name].colors;
+  document.documentElement.dataset.theme = name;
+  themeBtn.textContent = THEMES[name].label;
+  themeBtn.setAttribute('aria-pressed', String(name === 'light'));
+  // con pausa o game over el rAF está cancelado: redibujar para ver el cambio
+  if (current && next) {
+    draw();
+    drawNext();
+  }
+}
+
+function toggleTheme() {
+  applyTheme(theme === 'dark' ? 'light' : 'dark');
+}
+
 function init() {
   board = createBoard();
   score = 0;
@@ -276,6 +322,7 @@ function init() {
 
 document.addEventListener('keydown', e => {
   if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyT') { toggleTheme(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
@@ -300,5 +347,10 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', init);
+themeBtn.addEventListener('click', () => {
+  toggleTheme();
+  themeBtn.blur(); // evita que Space active el botón en vez de la caída
+});
 
+applyTheme('dark');
 init();

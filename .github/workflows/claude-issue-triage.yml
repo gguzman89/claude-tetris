@@ -1,0 +1,69 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+concurrency:
+  group: triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    # Evita bucles: ignorar ediciones hechas por bots
+    if: |
+      github.event.sender.type != 'Bot' &&
+      github.actor != 'claude[bot]' &&
+      github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Triage y diagnóstico con Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: >-
+            --allowedTools "Read,Glob,Grep,Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh issue comment:*),Bash(gh label list:*),Bash(gh api:*)"
+          prompt: |
+            REPO: ${{ github.repository }}
+            ISSUE: #${{ github.event.issue.number }}
+            EVENTO: ${{ github.event.action }}
+
+            Eres un asistente de triage para un Tetris en JS vanilla + Canvas 2D.
+            Responde siempre en español. Tu trabajo es etiquetar la issue y dejar un
+            diagnóstico técnico que luego sirva para implementar la solución.
+
+            Pasos:
+            1. Lee la issue con `gh issue view ${{ github.event.issue.number }} --comments`
+               y lista los labels disponibles con `gh label list`.
+            2. Lee `CLAUDE.md` y el código relevante (`game.js`, `index.html`, `style.css`)
+               para ubicar dónde está el problema o dónde encajaría la mejora.
+            3. Labels: usa SOLO labels existentes en el repo. Elige el tipo
+               (bug, enhancement, documentation, question, accessibility) y, si aplica,
+               `good first issue`. Si falta información para entender la issue, usa `question`.
+               Aplica con `gh issue edit --add-label`. Si el evento es `edited`, quita con
+               `--remove-label` los labels que ya no apliquen (no toques `duplicate`,
+               `invalid`, `wontfix` ni `help wanted` si los puso una persona).
+            4. Diagnóstico: publica UN solo comentario que empiece con el marcador
+               `<!-- claude-triage -->`. Antes, busca con
+               `gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments`
+               si ya existe un comentario con ese marcador; si existe, actualízalo con
+               `gh api -X PATCH repos/${{ github.repository }}/issues/comments/<id> -f body=...`
+               en lugar de crear otro. Si no existe, créalo con `gh issue comment`.
+               Formato del comentario:
+               - **Resumen**
+               - **Tipo y severidad**
+               - **Componentes afectados** (`archivo:línea`, funciones)
+               - **Causa probable / análisis**
+               - **Propuesta de solución** (pasos concretos)
+               - **Riesgos y casos borde**
+               - **Preguntas abiertas** (si las hay)
+            5. Restricciones: NO modifiques código, NO abras PRs, NO cierres la issue.

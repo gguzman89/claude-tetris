@@ -226,3 +226,140 @@ kbd {
 #restart-btn:hover {
   background: var(--accent-hover);
 }
+
+/* ---- Records y pantalla de inicio ---- */
+.start-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.start-screen.hidden {
+  display: none;
+}
+
+.start-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--accent);
+}
+
+.start-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+#start-btn {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 36px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+#start-btn:hover {
+  background: var(--accent-hover);
+}
+
+.records-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.records-box.hidden,
+.record-form.hidden {
+  display: none;
+}
+
+.record-msg {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.record-form {
+  display: flex;
+  gap: 6px;
+}
+
+#record-name {
+  width: 130px;
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  user-select: text;
+}
+
+#record-save,
+.records-reset {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#record-save:hover,
+.records-reset:hover {
+  border-color: var(--accent);
+}
+
+.records-list {
+  list-style: none;
+  width: 250px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+}
+
+.records-list li {
+  display: grid;
+  grid-template-columns: 24px 1fr auto 44px;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  text-align: left;
+  color: var(--text);
+}
+
+.records-list .rec-score {
+  color: var(--accent);
+  text-align: right;
+}
+
+.records-list .rec-lines {
+  color: var(--muted);
+  text-align: right;
+}
+
+.records-list li.highlight {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+.records-list li.highlight .rec-score,
+.records-list li.highlight .rec-lines {
+  color: var(--on-accent);
+}
+
+.records-stats {
+  font-size: 12px;
+  color: var(--muted);
+}

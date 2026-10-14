@@ -71,8 +71,37 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeBtn = document.getElementById('theme-toggle');
+const pauseMenu = document.getElementById('pause-menu');
+const pauseResumeBtn = document.getElementById('pause-resume');
+const pauseRestartBtn = document.getElementById('pause-restart');
+const pauseControlsBtn = document.getElementById('pause-controls-btn');
+const pauseControlsList = document.getElementById('pause-controls');
+const pauseBox = document.querySelector('.pause-box');
+const startLevelSelect = document.getElementById('pause-start-level');
+
+const MAX_START_LEVEL = 10;
+const INPUT_LOCK_MS = 150; // tras reanudar, ignora input para evitar movimientos accidentales
+let startLevel = loadStartLevel();
+let inputLockUntil = 0;
+let gameStartLevel = 1; // nivel con el que arrancó la partida en curso (startLevel aplica a la siguiente)
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+
+function loadStartLevel() {
+  try {
+    const n = parseInt(localStorage.getItem('tetris.startLevel'), 10);
+    if (n >= 1 && n <= MAX_START_LEVEL) return n;
+  } catch (e) { /* localStorage no disponible */ }
+  return 1;
+}
+
+function saveStartLevel() {
+  try { localStorage.setItem('tetris.startLevel', String(startLevel)); } catch (e) { /* ignorar */ }
+}
+
+function intervalForLevel(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
+}
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -138,8 +167,8 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = Math.max(gameStartLevel, Math.floor(lines / 10) + 1);
+    dropInterval = intervalForLevel(level);
     updateHUD();
   }
 }
@@ -262,13 +291,16 @@ function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    pauseMenu.classList.add('hidden');
+    if (document.activeElement) document.activeElement.blur();
+    inputLockUntil = performance.now() + INPUT_LOCK_MS;
     lastTime = performance.now();
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    startLevelSelect.value = String(startLevel);
+    pauseMenu.classList.remove('hidden');
+    pauseBox.focus(); // foco en el contenedor: un Space/Enter accidental no activa ningún botón
   }
 }
 
@@ -311,24 +343,34 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  gameStartLevel = startLevel;
+  level = gameStartLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = intervalForLevel(level);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  pauseMenu.classList.add('hidden');
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    if (e.code === 'Escape' && e.target === startLevelSelect) return; // Esc cierra el desplegable nativo
+    e.preventDefault();
+    if (!e.repeat) togglePause();
+    return;
+  }
+  // con el menú abierto solo se permiten P/Esc y la navegación nativa del menú
+  if (paused) return;
   if (e.code === 'KeyT') { toggleTheme(); return; }
-  if (paused || gameOver) return;
+  if (gameOver) return;
+  if (performance.now() < inputLockUntil) return;
   switch (e.code) {
     case 'ArrowLeft':
       if (!collide(current.shape, current.x - 1, current.y)) current.x--;
@@ -352,6 +394,28 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', init);
+
+for (let i = 1; i <= MAX_START_LEVEL; i++) {
+  startLevelSelect.add(new Option(String(i), String(i)));
+}
+startLevelSelect.value = String(startLevel);
+startLevelSelect.addEventListener('change', () => {
+  startLevel = parseInt(startLevelSelect.value, 10);
+  saveStartLevel();
+});
+pauseResumeBtn.addEventListener('click', () => {
+  togglePause();
+  pauseResumeBtn.blur();
+});
+pauseRestartBtn.addEventListener('click', () => {
+  init();
+  pauseRestartBtn.blur();
+});
+pauseControlsBtn.addEventListener('click', () => {
+  const open = pauseControlsList.classList.toggle('hidden') === false;
+  pauseControlsBtn.setAttribute('aria-expanded', String(open));
+  pauseControlsBtn.blur();
+});
 themeBtn.addEventListener('click', () => {
   toggleTheme();
   themeBtn.blur(); // evita que Space active el botón en vez de la caída

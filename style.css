@@ -226,3 +226,89 @@ kbd {
 #restart-btn:hover {
   background: var(--accent-hover);
 }
+
+/* ---- Menú de pausa ---- */
+.pause-menu {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+}
+
+.pause-menu.hidden,
+.pause-controls.hidden {
+  display: none;
+}
+
+.pause-box:focus { outline: none; }
+
+.pause-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  min-width: 200px;
+}
+
+.pause-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.pause-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.pause-btn:hover,
+.pause-btn:focus-visible {
+  background: var(--accent-hover);
+  color: var(--on-accent);
+  outline: none;
+}
+
+.pause-btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.pause-level {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.pause-level select {
+  font: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.pause-controls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--accent);
+}

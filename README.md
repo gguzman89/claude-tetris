@@ -86,7 +86,7 @@ Después abre `http://localhost:8000` en el navegador.
 | `↓`       | Soft drop (bajar más rápido)      |
 | `Espacio` | Hard drop (caída instantánea)     |
 | `P`       | Pausar / reanudar                 |
-| `T`       | Alternar tema oscuro / claro      |
+| `T`       | Ciclar skin (retro/neon/pastel/pixel)|
 
 ---
 
@@ -159,7 +159,7 @@ Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara
 ```
 03-tetris/
 ├── index.html      # Estructura del DOM y canvas
-├── style.css       # Estilos del juego (dark theme)
+├── style.css       # Estilos del juego (skins)
 ├── game.js         # Toda la lógica del Tetris (~300 líneas)
 └── README.md
 ```

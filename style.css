@@ -1,5 +1,5 @@
-/* ---- Temas ---- */
-:root {
+/* ---- Skins (retro por defecto) ---- */
+:root, [data-skin="retro"] {
   --bg: #0f0f17;
   --text: #e0e0e0;
   --accent: #7aa2f7;
@@ -17,22 +17,70 @@
   --shadow: rgba(0, 0, 0, 0.6);
 }
 
-[data-theme="light"] {
-  --bg: #f1f2f7;
-  --text: #22232e;
-  --accent: #2f5fd0;
-  --accent-hover: #4a77e5;
+[data-skin="neon"] {
+  --bg: #000000;
+  --text: #d8f6ff;
+  --accent: #00f0ff;
+  --accent-hover: #7dfaff;
+  --on-accent: #000000;
+  --danger: #ff1744;
+  --canvas-bg: #000000;
+  --border: #0a6a73;
+  --label: #3a8f99;
+  --muted: #6fb7c2;
+  --kbd-bg: #05141a;
+  --kbd-border: #0a6a73;
+  --kbd-text: #7dfaff;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+  --shadow: rgba(0, 240, 255, 0.35);
+}
+
+[data-skin="pastel"] {
+  --bg: #fdf6fb;
+  --text: #4a4458;
+  --accent: #b07cc6;
+  --accent-hover: #c597d8;
   --on-accent: #ffffff;
-  --danger: #c62828;
-  --canvas-bg: #ffffff;
-  --border: #c5c8d6;
-  --label: #5d6078;
-  --muted: #55586b;
-  --kbd-bg: #e4e6f0;
-  --kbd-border: #b5b9cc;
-  --kbd-text: #33364a;
-  --overlay-bg: rgba(241, 242, 247, 0.8);
-  --shadow: rgba(40, 45, 80, 0.2);
+  --danger: #e57c8c;
+  --canvas-bg: #f4ecf9;
+  --border: #e3d3ee;
+  --label: #8c819c;
+  --muted: #7a7089;
+  --kbd-bg: #f1e8f7;
+  --kbd-border: #d8c6e6;
+  --kbd-text: #5d5370;
+  --overlay-bg: rgba(253, 246, 251, 0.8);
+  --shadow: rgba(176, 124, 198, 0.25);
+}
+
+[data-skin="pixel"] {
+  --bg: #1b1b2b;
+  --text: #f0e9d2;
+  --accent: #ffcc33;
+  --accent-hover: #ffe27a;
+  --on-accent: #1b1b2b;
+  --danger: #ff5555;
+  --canvas-bg: #12121c;
+  --border: #4a4a6a;
+  --label: #8a8ab0;
+  --muted: #a8a8c8;
+  --kbd-bg: #2a2a40;
+  --kbd-border: #5a5a80;
+  --kbd-text: #d8d8f0;
+  --overlay-bg: rgba(18, 18, 28, 0.8);
+  --shadow: rgba(0, 0, 0, 0.7);
+}
+
+[data-skin="pixel"] .title,
+[data-skin="pixel"] .value,
+[data-skin="pixel"] #overlay-title {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+[data-skin="pixel"] #board,
+[data-skin="pixel"] #next-canvas {
+  image-rendering: pixelated;
+  border-radius: 0;
 }
 
 *, *::before, *::after {
@@ -74,7 +122,8 @@ body {
   margin-bottom: 16px;
 }
 
-#theme-toggle {
+#skin-select {
+  color-scheme: light dark;
   position: absolute;
   right: 0;
   top: 8px;
@@ -83,11 +132,12 @@ body {
   border: 1px solid var(--kbd-border);
   border-radius: 999px;
   padding: 6px 12px;
+  font-family: inherit;
   font-size: 13px;
   cursor: pointer;
 }
 
-#theme-toggle:hover {
+#skin-select:hover {
   border-color: var(--accent);
 }
 

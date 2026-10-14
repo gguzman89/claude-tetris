@@ -510,6 +510,7 @@ document.addEventListener('keydown', e => {
   const tag = e.target && e.target.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA') return;
   if (!started) {
+    if (tag === 'BUTTON' && e.target !== startBtn) return; // Enter sobre otro botón lo activa él
     if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); startGame(); }
     else if (e.code === 'KeyT') toggleTheme();
     return;
@@ -540,6 +541,7 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', () => {
+  savePendingRecord(); // no perder un récord sin nombre guardado
   init();
   restartBtn.blur();
 });
